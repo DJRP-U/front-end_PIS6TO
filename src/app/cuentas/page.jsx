@@ -8,8 +8,9 @@ import axios from 'axios';
 import { obtenerR } from '../hooks/Conexion'; // Asegúrate de que la ruta a api-utils sea correcta
 import mongoose from 'mongoose'; 
 import mensajes from "../components/Mensajes";
-import mensajeConfirmacion from "../components/MensajeConfirmacion"
+import mensajeConfirmacion from "../components/MensajeConfirmacion";
 import { API_URL } from '@/constants';
+
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]); // Estado para los roles, inicializado como un arreglo vacío
@@ -66,23 +67,22 @@ export default function UserManagement() {
         if (!mongoose.Types.ObjectId.isValid(data.role)) {
           data.role = new mongoose.Types.ObjectId(data.role);
         }
-        fetchUsers();
         await axios.put(`${API_URL}/account/${localStorage.getItem('external')}`, data);
-        mensajes("Usuario modificado exitosamente","usuario modificado","success");
+        mensajes("Usuario modificado exitosamente", "usuario modificado", "success");
       }
       fetchUsers();
       setSelectedUser(null);
       resetForm();
     } catch (error) {
       console.error('Error al guardar el usuario', error);
-      mensajes("Error al guardar el usuario","usuario no modificado","error");
+      mensajes("Error al guardar el usuario", "usuario no modificado", "error");
     }
   };
 
   const handleEdit = (user) => {
     setSelectedUser(user);
     console.log(user.id);
-    localStorage.setItem('external',user.id);
+    localStorage.setItem('external', user.id);
     setValue('id', user.id);
     setValue('name', user.name);
     setValue('lastname', user.lastname);
@@ -97,7 +97,7 @@ export default function UserManagement() {
       fetchUsers();
     } catch (error) {
       console.error('Error al eliminar el usuario', error);
-      mensajes(error.body,"usuario no eliminado","error");
+      mensajes(error.body, "usuario no eliminado", "error");
     }
   };
 
@@ -190,21 +190,23 @@ export default function UserManagement() {
         </thead>
         <tbody>
           {users.length > 0 ? (
-            users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.name}</td>
-                <td>{user.lastname}</td>
-                <td>{user.email}</td>
-                <td>
-                  <button className="btn btn-warning" onClick={() => handleEdit(user)}>
-                    Editar
-                  </button>
-                  <button className="btn btn-danger" onClick={() => handleDelete(user.id)}>
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))
+            users
+              .filter((user) => user.state !== 'INACTIVA')
+              .map((user) => (
+                <tr key={user.id}>
+                  <td>{user.name}</td>
+                  <td>{user.lastname}</td>
+                  <td>{user.email}</td>
+                  <td>
+                    <button className="btn btn-warning" onClick={() => handleEdit(user)}>
+                      Editar
+                    </button>
+                    <button className="btn btn-danger" onClick={() => handleDelete(user.id)}>
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))
           ) : (
             <tr>
               <td colSpan="4" className="text-center">
