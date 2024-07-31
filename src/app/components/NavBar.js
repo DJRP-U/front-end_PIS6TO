@@ -24,6 +24,11 @@ export default function NavBar() {
               Inicio
             </Link>
           </li>
+          <li>
+            <Link href={"/historial"}>
+              Historial
+            </Link>
+          </li>
           {role === 'Administrador' &&
             <li>
               <Link href={"/placas"}>
